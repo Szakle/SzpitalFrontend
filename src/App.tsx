@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginPage from './pages/LoginPage';
 import AddOsobaPage from './pages/AddOsobaPage';
 import OsobaListPage from './pages/OsobaListPage';
+import ZatrudnieniePage from './pages/ZatrudnieniePage';
 import Navbar from './components/Navbar';
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
             <Route path="/" element={<Navigate to="/dodaj-osobe" />} />
             <Route path="/dodaj-osobe" element={<AddOsobaPage />} />
             <Route path="/osoby" element={<OsobaListPage />} />
+            <Route path="/zatrudnienie/:id" element={<ZatrudnieniePage />} />
             <Route path="/login" element={<Navigate to="/dodaj-osobe" />} />
           </>
         )}

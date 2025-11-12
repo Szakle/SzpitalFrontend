@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 export default function OsobaListPage() {
   const [osoby, setOsoby] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/api/Osoba')
@@ -35,7 +37,7 @@ export default function OsobaListPage() {
       <table style={{ borderCollapse: 'collapse', width: '100%' }}>
         <thead>
           <tr>
-            {['Imię', 'Drugie Imię', 'Nazwisko', 'PESEL', 'Data urodzenia', 'Nr PWZ', 'Telefon', 'Płeć', 'Typ Personelu'].map(header => (
+            {['Imię', 'Drugie Imię', 'Nazwisko', 'PESEL', 'Data urodzenia', 'Nr PWZ', 'Telefon', 'Płeć', 'Typ Personelu', 'Operacje'].map(header => (
               <th key={header} style={{ border: '1px solid #ccc', padding: '8px', background: '#f2f2f2' }}>{header}</th>
             ))}
           </tr>
@@ -52,6 +54,22 @@ export default function OsobaListPage() {
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{osoba.numerTelefonu}</td>
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{getPlecLabel(osoba.plecId)}</td>
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{getPersonelLabel(osoba.typPersoneluId)}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>
+                <button
+                  onClick={() => navigate(`/zatrudnienie/${osoba.id}`)}
+                  style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                  }}
+                >
+                  Podgląd zatrudnienia
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
