@@ -383,8 +383,24 @@ export default function ZatrudnieniePage() {
         </tbody>
       </table>
 
-      <h3 style={{ marginTop: '2rem' }}>Zatrudnienie</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem' }}>
+        <h3 style={{ margin: 0 }}>Zatrudnienie</h3>
+        <button
+          onClick={() => navigate(`/edytuj-zatrudnienie/${id}`)}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#28a745',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontSize: '14px'
+          }}
+        >
+          Edytuj zatrudnienie
+        </button>
+      </div>
+      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
         <tbody>
           <tr style={{ backgroundColor: '#f9f9f9' }}>
             <td style={{ padding: '8px', borderBottom: '1px solid #ddd', fontWeight: 'bold', width: '200px' }}>Zatrudnienie/deklaracja zatrudnienia:</td>
