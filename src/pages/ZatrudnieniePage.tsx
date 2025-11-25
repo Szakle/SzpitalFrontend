@@ -385,20 +385,51 @@ export default function ZatrudnieniePage() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2rem' }}>
         <h3 style={{ margin: 0 }}>Zatrudnienie</h3>
-        <button
-          onClick={() => navigate(`/edytuj-zatrudnienie/${id}`)}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#28a745',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '14px'
-          }}
-        >
-          Edytuj zatrudnienie
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            onClick={() => navigate(`/edytuj-zatrudnienie/${id}`)}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            Edytuj zatrudnienie
+          </button>
+          <button
+            onClick={async () => {
+              if (!zatrudnienie) {
+                alert('Brak zatrudnienia do usunięcia');
+                return;
+              }
+              if (window.confirm('Czy na pewno chcesz usunąć to zatrudnienie?')) {
+                try {
+                  await api.delete(`/api/Zatrudnienie/${zatrudnienie.id}`);
+                  alert('Zatrudnienie zostało usunięte');
+                  navigate('/osoby');
+                } catch (err) {
+                  console.error('Błąd podczas usuwania zatrudnienia:', err);
+                  alert('Nie udało się usunąć zatrudnienia');
+                }
+              }
+            }}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#dc3545',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            Usuń zatrudnienie
+          </button>
+        </div>
       </div>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
         <tbody>

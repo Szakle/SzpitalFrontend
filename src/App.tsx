@@ -5,8 +5,21 @@ import LoginPage from './pages/LoginPage';
 import AddOsobaPage from './pages/AddOsobaPage';
 import OsobaListPage from './pages/OsobaListPage';
 import EditOsobaPage from './pages/EditOsobaPage';
+import EditOsobaStep2Page from './pages/EditOsobaStep2Page';
+import EditOsobaStep3Page from './pages/EditOsobaStep3Page';
+import EditOsobaStep4Page from './pages/EditOsobaStep4Page';
+import EditOsobaStep5Page from './pages/EditOsobaStep5Page';
+import EditOsobaStep6Page from './pages/EditOsobaStep6Page';
+import EditOsobaStep7Page from './pages/EditOsobaStep7Page';
+import EditOsobaPodsumowaniePage from './pages/EditOsobaPodsumowaniePage';
 import ZatrudnieniePage from './pages/ZatrudnieniePage';
 import EditZatrudnieniePage from './pages/EditZatrudnieniePage';
+import EditZatrudnienieStep2Page from './pages/EditZatrudnienieStep2Page';
+import RozwiazZatrudnieniePage from './pages/RozwiazZatrudnieniePage';
+import UsunZatrudnieniePage from './pages/UsunZatrudnieniePage';
+import MiejscaPracyPage from './pages/MiejscaPracyPage';
+import DodajMiejscePracyPage from './pages/DodajMiejscePracyPage';
+import EdytujMiejscePracyPage from './pages/EdytujMiejscePracyPage';
 import Navbar from './components/Navbar';
 
 const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minut w milisekundach
@@ -79,8 +92,21 @@ const App = () => {
             <Route path="/dodaj-osobe" element={<AddOsobaPage />} />
             <Route path="/osoby" element={<OsobaListPage />} />
             <Route path="/edytuj-osobe/:id" element={<EditOsobaPage />} />
+            <Route path="/edytuj-osobe-step2/:id" element={<EditOsobaStep2Page />} />
+            <Route path="/edytuj-osobe-step3/:id" element={<EditOsobaStep3Page />} />
+            <Route path="/edytuj-osobe-step4/:id" element={<EditOsobaStep4Page />} />
+            <Route path="/edytuj-osobe-step5/:id" element={<EditOsobaStep5Page />} />
+            <Route path="/edytuj-osobe-step6/:id" element={<EditOsobaStep6Page />} />
+            <Route path="/edytuj-osobe-step7/:id" element={<EditOsobaStep7Page />} />
+            <Route path="/edytuj-osobe-podsumowanie/:id" element={<EditOsobaPodsumowaniePage />} />
             <Route path="/zatrudnienie/:id" element={<ZatrudnieniePage />} />
             <Route path="/edytuj-zatrudnienie/:id" element={<EditZatrudnieniePage />} />
+            <Route path="/edytuj-zatrudnienie-step2/:id" element={<EditZatrudnienieStep2Page />} />
+            <Route path="/rozwiaz-zatrudnienie/:id" element={<RozwiazZatrudnieniePage />} />
+            <Route path="/usun-zatrudnienie/:id" element={<UsunZatrudnieniePage />} />
+            <Route path="/miejsca-pracy/:id" element={<MiejscaPracyPage />} />
+            <Route path="/dodaj-miejsce-pracy/:id" element={<DodajMiejscePracyPage />} />
+            <Route path="/edytuj-miejsce-pracy/:id" element={<EdytujMiejscePracyPage />} />
             <Route path="/login" element={<Navigate to="/dodaj-osobe" />} />
           </>
         )}

@@ -46,19 +46,9 @@ export default function EditOsobaPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async () => {
-    try {
-      await api.put(`/api/Osoba/${id}`, {
-        ...form,
-        plecId: Number(form.plecId),
-        typPersoneluId: Number(form.typPersoneluId),
-      });
-      alert('Zaktualizowano dane osoby!');
-      navigate('/osoby');
-    } catch (err) {
-      console.error('Błąd przy aktualizacji:', err);
-      alert('Błąd przy aktualizacji danych.');
-    }
+  const handleNext = () => {
+    // Przejdź do następnej strony (Wykształcenie)
+    navigate(`/edytuj-osobe-step2/${id}`, { state: form });
   };
 
   const handleCancel = () => {
@@ -160,7 +150,7 @@ export default function EditOsobaPage() {
           Anuluj
         </button>
         <button
-          onClick={handleSubmit}
+          onClick={handleNext}
           style={{
             padding: '10px 20px',
             backgroundColor: '#28a745',

@@ -14,7 +14,6 @@ export default function EditZatrudnieniePage() {
     srednioczasowyCzasPracyGodziny: '',
     srednioczasowyCzasPracyMinuty: ''
   });
-  const [zatrudnienieId, setZatrudnienieId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +31,6 @@ export default function EditZatrudnieniePage() {
     api.get(`/api/Zatrudnienie/osoba/${id}`)
       .then(res => {
         const data = res.data;
-        setZatrudnienieId(data.id);
         
         // Parsuj czas pracy
         let godziny = '';
@@ -70,34 +68,9 @@ export default function EditZatrudnieniePage() {
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      // Połącz godziny i minuty w format "HH:MM"
-      const czasPracy = `${form.srednioczasowyCzasPracyGodziny || '0'}:${form.srednioczasowyCzasPracyMinuty || '0'}`;
-      
-      const payload = {
-        osobaId: Number(id),
-        zatrudnienieDeklaracja: form.zatrudnienieDeklaracja,
-        zatrudnionyOd: form.zatrudnionyOd || null,
-        zatrudnionyDo: form.zatrudnienieBezterminowe ? null : (form.zatrudnionyDo || null),
-        srednioczasowyCzasPracy: czasPracy
-      };
-
-      if (zatrudnienieId) {
-        // Aktualizuj istniejące zatrudnienie
-        await api.put(`/api/Zatrudnienie/${zatrudnienieId}`, payload);
-        alert('Zaktualizowano dane zatrudnienia!');
-      } else {
-        // Utwórz nowe zatrudnienie
-        await api.post('/api/Zatrudnienie', payload);
-        alert('Dodano nowe zatrudnienie!');
-      }
-      
-      navigate(`/zatrudnienie/${id}`);
-    } catch (err) {
-      console.error('Błąd przy zapisywaniu:', err);
-      alert('Błąd przy zapisywaniu danych.');
-    }
+  const handleNext = () => {
+    // Przejdź do następnej strony (krok 2) z danymi z formularza
+    navigate(`/edytuj-zatrudnienie-step2/${id}`, { state: form });
   };
 
   const handleCancel = () => {
@@ -228,7 +201,7 @@ export default function EditZatrudnieniePage() {
           Anuluj
         </button>
         <button
-          onClick={handleSubmit}
+          onClick={handleNext}
           style={{
             padding: '10px 20px',
             backgroundColor: '#28a745',

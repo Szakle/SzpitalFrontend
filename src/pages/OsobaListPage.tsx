@@ -89,62 +89,34 @@ export default function OsobaListPage() {
                   <td style={{ border: '1px solid #dee2e6', padding: '12px', fontSize: '14px', color: '#212529' }}>{getPlecLabel(osoba.plecId)}</td>
                   <td style={{ border: '1px solid #dee2e6', padding: '12px', fontSize: '14px', color: '#212529' }}>{getPersonelLabel(osoba.typPersoneluId)}</td>
                   <td style={{ border: '1px solid #dee2e6', padding: '12px', whiteSpace: 'nowrap' }}>
-                    <button
-                      onClick={() => navigate(`/edytuj-osobe/${osoba.id}`)}
+                    <select
                       style={{
-                        padding: '8px 14px',
-                        backgroundColor: '#28a745',
-                        color: 'white',
-                        border: 'none',
+                        padding: '8px 12px',
+                        fontSize: '14px',
+                        border: '1px solid #ddd',
                         borderRadius: '4px',
                         cursor: 'pointer',
-                        fontSize: '13px',
-                        marginRight: '6px',
-                        fontWeight: '500',
-                        transition: 'background-color 0.2s'
+                        backgroundColor: 'white',
+                        width: '100%',
+                        minWidth: '200px'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#218838'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#28a745'}
-                    >
-                      Edytuj osobę
-                    </button>
-                    <button
-                      onClick={() => navigate(`/edytuj-zatrudnienie/${osoba.id}`)}
-                      style={{
-                        padding: '8px 14px',
-                        backgroundColor: '#17a2b8',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        marginRight: '6px',
-                        fontWeight: '500',
-                        transition: 'background-color 0.2s'
+                      defaultValue=""
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value) {
+                          navigate(value);
+                          e.target.value = '';
+                        }
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#138496'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#17a2b8'}
                     >
-                      Edytuj zatrudnienie
-                    </button>
-                    <button
-                      onClick={() => navigate(`/zatrudnienie/${osoba.id}`)}
-                      style={{
-                        padding: '8px 14px',
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: '500',
-                        transition: 'background-color 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#0056b3'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#007bff'}
-                    >
-                      Podgląd zatrudnienia
-                    </button>
+                      <option value="" disabled>Wybierz operację...</option>
+                      <option value={`/edytuj-osobe/${osoba.id}`}>Edytuj osobę</option>
+                      <option value={`/edytuj-zatrudnienie/${osoba.id}`}>Edytuj zatrudnienie</option>
+                      <option value={`/rozwiaz-zatrudnienie/${osoba.id}`}>Rozwiąż zatrudnienie</option>
+                      <option value={`/usun-zatrudnienie/${osoba.id}`}>Usuń zatrudnienie</option>
+                      <option value={`/miejsca-pracy/${osoba.id}`}>Miejsca pracy</option>
+                      <option value={`/zatrudnienie/${osoba.id}`}>Podgląd zatrudnienia</option>
+                    </select>
                   </td>
                 </tr>
               ))}
