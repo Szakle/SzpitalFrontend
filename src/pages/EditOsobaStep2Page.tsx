@@ -17,6 +17,13 @@ export default function EditOsobaStep2Page() {
     dataUkonczenia: '',
     dyplom: ''
   });
+  
+  const [options, setOptions] = useState({
+    rodzaje: [] as string[],
+    kierunki: [] as string[],
+    uczelnie: [] as string[],
+    dyplomy: [] as string[]
+  });
 
   const loadWyksztalcenia = () => {
     api.get(`/api/Wyksztalcenie/osoba/${id}`)
@@ -32,7 +39,28 @@ export default function EditOsobaStep2Page() {
 
   useEffect(() => {
     loadWyksztalcenia();
+    loadOptions();
   }, [id]);
+
+  const loadOptions = async () => {
+    try {
+      const [rodzajeRes, kierunkiRes, uczelnieRes, dyplomyRes] = await Promise.all([
+        api.get('/api/Wyksztalcenie/options/rodzaj'),
+        api.get('/api/Wyksztalcenie/options/kierunek'),
+        api.get('/api/Wyksztalcenie/options/uczelnia'),
+        api.get('/api/Wyksztalcenie/options/dyplom')
+      ]);
+      
+      setOptions({
+        rodzaje: rodzajeRes.data,
+        kierunki: kierunkiRes.data,
+        uczelnie: uczelnieRes.data,
+        dyplomy: dyplomyRes.data
+      });
+    } catch (err) {
+      console.error('Błąd podczas pobierania opcji:', err);
+    }
+  };
 
   const handleBack = () => {
     navigate(`/edytuj-osobe/${id}`, { state: location.state });
@@ -140,9 +168,11 @@ export default function EditOsobaStep2Page() {
           <thead>
             <tr style={{ backgroundColor: '#b8d4f7' }}>
               <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Lp.</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Kod</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Nazwa</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Typ zmian</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Wykształcenie</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Kierunek</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Uczelnia</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Data ukończenia</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Dyplom</th>
               <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Operacje</th>
             </tr>
           </thead>
@@ -150,9 +180,13 @@ export default function EditOsobaStep2Page() {
             {wyksztalcenia.map((w, index) => (
               <tr key={w.id} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
                 <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{index + 1}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>0004</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.rodzajWyksztalcenia || 'WYŻSZE'}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>bez zmian</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.rodzajWyksztalcenia || '-'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.kierunek || '-'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.uczelnia || '-'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>
+                  {w.dataUkonczenia ? new Date(w.dataUkonczenia).toLocaleDateString('pl-PL') : '-'}
+                </td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.dyplom || '-'}</td>
                 <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>
                   <button onClick={() => handleEdit(w)} style={{ color: '#0066cc', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer', marginRight: '10px' }}>edytuj</button>
                   <button onClick={() => handleDelete(w.id)} style={{ color: '#0066cc', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>usuń</button>
@@ -242,31 +276,52 @@ export default function EditOsobaStep2Page() {
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem' }}>Rodzaj wykształcenia:</label>
               <input
+                list="rodzaje-list"
                 type="text"
                 value={formData.rodzajWyksztalcenia}
                 onChange={(e) => setFormData({ ...formData, rodzajWyksztalcenia: e.target.value })}
                 style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
               />
+              <datalist id="rodzaje-list">
+                {options.rodzaje.map((r, idx) => (
+                  <option key={idx} value={r} />
+                ))}
+              </datalist>
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem' }}>Kierunek:</label>
               <input
+                list="kierunki-list"
                 type="text"
                 value={formData.kierunek}
                 onChange={(e) => setFormData({ ...formData, kierunek: e.target.value })}
                 style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
               />
+              <datalist id="kierunki-list">
+                {options.kierunki.map((k, idx) => (
+                  <option key={idx} value={k} />
+                ))}
+              </datalist>
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem' }}>Uczelnia:</label>
               <input
+                list="uczelnie-list"
                 type="text"
                 value={formData.uczelnia}
                 onChange={(e) => setFormData({ ...formData, uczelnia: e.target.value })}
                 style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
               />
+              <datalist id="uczelnie-list">
+                {options.uczelnie.map((u, idx) => (
+                  <option key={idx} value={u} />
+                ))}
+              </datalist>
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
@@ -282,11 +337,18 @@ export default function EditOsobaStep2Page() {
             <div style={{ marginBottom: '1rem' }}>
               <label style={{ display: 'block', marginBottom: '0.5rem' }}>Dyplom:</label>
               <input
+                list="dyplomy-list"
                 type="text"
                 value={formData.dyplom}
                 onChange={(e) => setFormData({ ...formData, dyplom: e.target.value })}
                 style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
               />
+              <datalist id="dyplomy-list">
+                {options.dyplomy.map((d, idx) => (
+                  <option key={idx} value={d} />
+                ))}
+              </datalist>
             </div>
 
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
