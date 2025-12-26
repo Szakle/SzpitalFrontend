@@ -11,26 +11,62 @@ export default function EditOsobaStep3Page() {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
-    rodzaj: '',
-    npwzIdRizh: '',
-    organRejestrujacy: '',
-    dataUzyciaUprawnienia: ''
+    kod: '',
+    nazwa: '',
+    stopienSpecjalizacji: '',
+    dataOtwarciaSpecjalizacji: '',
+    dyplom: ''
+  });
+  
+  const [options, setOptions] = useState({
+    kody: [] as string[],
+    nazwy: [] as string[],
+    stopnie: [] as string[],
+    dyplomy: [] as string[]
   });
 
-  const loadUprawnienia = () => {
-    api.get(`/api/UprawnieniZawodowe/osoba/${id}`)
+  const loadZawody = () => {
+    api.get(`/api/ZawodySpecjalnosci/osoba/${id}`)
       .then(res => {
         setUprawnienia(res.data);
         setLoading(false);
       })
       .catch(err => {
-        console.error('Błąd podczas pobierania uprawnień:', err);
+        console.error('Błąd podczas pobierania zawodów/specjalności:', err);
         setLoading(false);
       });
   };
 
+  const loadOptions = async () => {
+    try {
+      const [kodyRes, nazwyRes, stopnieRes, dyplomyRes] = await Promise.all([
+        api.get('/api/ZawodySpecjalnosci/options/kod'),
+        api.get('/api/ZawodySpecjalnosci/options/nazwa'),
+        api.get('/api/ZawodySpecjalnosci/options/stopien'),
+        api.get('/api/ZawodySpecjalnosci/options/dyplom')
+      ]);
+      
+      console.log('Załadowano opcje:', {
+        kody: kodyRes.data,
+        nazwy: nazwyRes.data,
+        stopnie: stopnieRes.data,
+        dyplomy: dyplomyRes.data
+      });
+      
+      setOptions({
+        kody: kodyRes.data,
+        nazwy: nazwyRes.data,
+        stopnie: stopnieRes.data,
+        dyplomy: dyplomyRes.data
+      });
+    } catch (err) {
+      console.error('Błąd podczas pobierania opcji:', err);
+    }
+  };
+
   useEffect(() => {
-    loadUprawnienia();
+    loadZawody();
+    loadOptions();
   }, [id]);
 
   const handleBack = () => {
@@ -48,10 +84,11 @@ export default function EditOsobaStep3Page() {
   const handleAdd = () => {
     setEditingId(null);
     setFormData({
-      rodzaj: '',
-      npwzIdRizh: '',
-      organRejestrujacy: '',
-      dataUzyciaUprawnienia: ''
+      kod: '',
+      nazwa: '',
+      stopienSpecjalizacji: '',
+      dataOtwarciaSpecjalizacji: '',
+      dyplom: ''
     });
     setShowModal(true);
   };
@@ -59,26 +96,27 @@ export default function EditOsobaStep3Page() {
   const handleEdit = (uprawnienie: any) => {
     setEditingId(uprawnienie.id);
     setFormData({
-      rodzaj: uprawnienie.rodzaj || '',
-      npwzIdRizh: uprawnienie.npwzIdRizh || '',
-      organRejestrujacy: uprawnienie.organRejestrujacy || '',
-      dataUzyciaUprawnienia: uprawnienie.dataUzyciaUprawnienia ? uprawnienie.dataUzyciaUprawnienia.split('T')[0] : ''
+      kod: uprawnienie.kod || '',
+      nazwa: uprawnienie.nazwa || '',
+      stopienSpecjalizacji: uprawnienie.stopienSpecjalizacji || '',
+      dataOtwarciaSpecjalizacji: uprawnienie.dataOtwarciaSpecjalizacji ? uprawnienie.dataOtwarciaSpecjalizacji.split('T')[0] : '',
+      dyplom: uprawnienie.dyplom || ''
     });
     setShowModal(true);
   };
 
-  const handleDelete = async (uprawnieniaId: number) => {
-    if (!window.confirm('Czy na pewno chcesz usunąć to uprawnienie?')) {
+  const handleDelete = async (zawodId: number) => {
+    if (!window.confirm('Czy na pewno chcesz usunąć ten zawód/specjalność?')) {
       return;
     }
 
     try {
-      await api.delete(`/api/UprawnieniZawodowe/${uprawnieniaId}`);
-      loadUprawnienia();
-      alert('Uprawnienie zostało usunięte');
+      await api.delete(`/api/ZawodySpecjalnosci/${zawodId}`);
+      loadZawody();
+      alert('Zawód/specjalność został usunięty');
     } catch (err) {
       console.error('Błąd podczas usuwania:', err);
-      alert('Błąd podczas usuwania uprawnienia');
+      alert('Błąd podczas usuwania zawodu/specjalności');
     }
   };
 
@@ -89,19 +127,26 @@ export default function EditOsobaStep3Page() {
         osobaId: Number(id)
       };
 
+      console.log('Wysyłane dane do API:', payload);
+
       if (editingId) {
-        await api.put(`/api/UprawnieniZawodowe/${editingId}`, payload);
-        alert('Uprawnienie zostało zaktualizowane');
+        console.log(`Aktualizacja zawodu/specjalności ID: ${editingId}`);
+        const response = await api.put(`/api/ZawodySpecjalnosci/${editingId}`, payload);
+        console.log('Odpowiedź PUT:', response.data);
+        alert('Zawód/specjalność został zaktualizowany');
       } else {
-        await api.post('/api/UprawnieniZawodowe', payload);
-        alert('Uprawnienie zostało dodane');
+        console.log('Dodawanie nowego zawodu/specjalności');
+        const response = await api.post('/api/ZawodySpecjalnosci', payload);
+        console.log('Odpowiedź POST:', response.data);
+        alert('Zawód/specjalność został dodany');
       }
 
       setShowModal(false);
-      loadUprawnienia();
-    } catch (err) {
+      loadZawody();
+    } catch (err: any) {
       console.error('Błąd podczas zapisywania:', err);
-      alert('Błąd podczas zapisywania danych');
+      console.error('Szczegóły błędu:', err.response?.data);
+      alert(`Błąd podczas zapisywania danych: ${err.response?.data?.error || err.message}`);
     }
   };
 
@@ -112,7 +157,7 @@ export default function EditOsobaStep3Page() {
   return (
     <div style={{ padding: '1rem', maxWidth: '1400px', margin: '0 auto' }}>
       <h2 style={{ color: '#0044cc', marginBottom: '1.5rem' }}>
-        Edycja danych osoby personelu - Uprawnienia zawodowe
+        Edycja danych osoby personelu - Zawody i specjalności
       </h2>
 
       <div style={{ marginBottom: '1.5rem' }}>
@@ -137,11 +182,11 @@ export default function EditOsobaStep3Page() {
           <thead>
             <tr style={{ backgroundColor: '#b8d4f7' }}>
               <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center', width: '50px' }}>Lp.</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Rodzaj</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>NPWZ/Id RIZM</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Organ<br/>rejestrujący</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Data uzyskania uprawnienia<br/>Data utraty uprawnienia</th>
-              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Typ zmian</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Kod</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Nazwa</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Stopień specjalizacji</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Data otwarcia specjalizacji</th>
+              <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'left' }}>Dyplom</th>
               <th style={{ border: '1px solid #ccc', padding: '10px', textAlign: 'center' }}>Operacje</th>
             </tr>
           </thead>
@@ -149,16 +194,13 @@ export default function EditOsobaStep3Page() {
             {uprawnienia.map((u, index) => (
               <tr key={u.id} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
                 <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{index + 1}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{u.rodzaj || 'LEKARZ'}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{u.npwzIdRizh || '3022214'}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px', fontSize: '12px' }}>
-                  {u.organRejestrujacy || 'Kod: 58\nNazwa: Lubelska Izba Lekarska'}
-                </td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{u.kod || '-'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{u.nazwa || '-'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{u.stopienSpecjalizacji || '-'}</td>
                 <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>
-                  <div>Uzy: {u.dataUzyciaUprawnienia ? u.dataUzyciaUprawnienia.split('T')[0] : '2001-09-26'}</div>
-                  <div>Utr: –</div>
+                  {u.dataOtwarciaSpecjalizacji ? new Date(u.dataOtwarciaSpecjalizacji).toLocaleDateString('pl-PL') : '-'}
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>bez zmian</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{u.dyplom || '-'}</td>
                 <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>
                   <button onClick={() => handleEdit(u)} style={{ color: '#0066cc', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}>edycja</button>
                   <br />
@@ -220,6 +262,145 @@ export default function EditOsobaStep3Page() {
           Dalej →
         </button>
       </div>
+
+      {/* Modal do dodawania/edycji uprawnień */}
+      {showModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            maxWidth: '600px',
+            width: '90%',
+            maxHeight: '90vh',
+            overflow: 'auto'
+          }}>
+            <h3 style={{ marginTop: 0 }}>{editingId ? 'Edytuj zawód/specjalność' : 'Dodaj zawód/specjalność'}</h3>
+            
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Kod:</label>
+              <input
+                list="kody-list"
+                type="text"
+                value={formData.kod}
+                onChange={(e) => setFormData({ ...formData, kod: e.target.value })}
+                onFocus={(e) => e.target.showPicker?.()}
+                style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
+              />
+              <datalist id="kody-list">
+                {options.kody.map((k, idx) => (
+                  <option key={idx} value={k} />
+                ))}
+              </datalist>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Nazwa:</label>
+              <input
+                list="nazwy-list"
+                type="text"
+                value={formData.nazwa}
+                onChange={(e) => setFormData({ ...formData, nazwa: e.target.value })}
+                onFocus={(e) => e.target.showPicker?.()}
+                style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
+              />
+              <datalist id="nazwy-list">
+                {options.nazwy.map((n, idx) => (
+                  <option key={idx} value={n} />
+                ))}
+              </datalist>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Stopień specjalizacji:</label>
+              <input
+                list="stopnie-list"
+                type="text"
+                value={formData.stopienSpecjalizacji}
+                onChange={(e) => setFormData({ ...formData, stopienSpecjalizacji: e.target.value })}
+                onFocus={(e) => e.target.showPicker?.()}
+                style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
+              />
+              <datalist id="stopnie-list">
+                {options.stopnie.map((s, idx) => (
+                  <option key={idx} value={s} />
+                ))}
+              </datalist>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Data otwarcia specjalizacji:</label>
+              <input
+                type="date"
+                value={formData.dataOtwarciaSpecjalizacji}
+                onChange={(e) => setFormData({ ...formData, dataOtwarciaSpecjalizacji: e.target.value })}
+                style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem' }}>Dyplom:</label>
+              <input
+                list="dyplomy-list"
+                type="text"
+                value={formData.dyplom}
+                onChange={(e) => setFormData({ ...formData, dyplom: e.target.value })}
+                onFocus={(e) => e.target.showPicker?.()}
+                style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                placeholder="Wybierz lub wpisz nową wartość"
+              />
+              <datalist id="dyplomy-list">
+                {options.dyplomy.map((d, idx) => (
+                  <option key={idx} value={d} />
+                ))}
+              </datalist>
+            </div>
+
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Anuluj
+              </button>
+              <button
+                onClick={handleModalSubmit}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Zapisz
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

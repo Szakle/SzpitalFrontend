@@ -125,17 +125,23 @@ export default function EditOsobaPodsumowaniePage() {
         <table style={{ borderCollapse: 'collapse', width: '100%', marginBottom: '1rem' }}>
           <thead>
             <tr style={{ backgroundColor: '#e0e0e0' }}>
-              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Kod</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Nazwa</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Typ zmian</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Rodzaj wykształcenia</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Kierunek</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Uczelnia</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Data ukończenia</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Dyplom</th>
             </tr>
           </thead>
           <tbody>
             {wyksztalcenia.map((w, index) => (
               <tr key={w.id} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>0004</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.rodzajWyksztalcenia || 'WYŻSZE'}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>bez zmian</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.rodzajWyksztalcenia || '–'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.kierunek || '–'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.uczelnia || '–'}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>
+                  {w.dataUkonczenia ? w.dataUkonczenia.split('T')[0] : '–'}
+                </td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{w.dyplom || '–'}</td>
               </tr>
             ))}
           </tbody>
@@ -160,7 +166,6 @@ export default function EditOsobaPodsumowaniePage() {
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>NPWZ/Id RIZM</th>
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Organ rejestrujący</th>
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Data uzyskania uprawnienia<br/>Data utraty uprawnienia</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Typ zmian</th>
             </tr>
           </thead>
           <tbody>
@@ -175,7 +180,6 @@ export default function EditOsobaPodsumowaniePage() {
                   Uzy: {u.dataUzyciaUprawnienia ? u.dataUzyciaUprawnienia.split('T')[0] : '2001-09-26'}<br/>
                   Utr: –
                 </td>
-                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>bez zmian</td>
               </tr>
             ))}
           </tbody>
@@ -201,7 +205,6 @@ export default function EditOsobaPodsumowaniePage() {
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Stopień specjalizacji</th>
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Data otwarcia<br/>Data uzyskania specjalizacji</th>
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Dyplom</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Typ zmian</th>
             </tr>
           </thead>
           <tbody>
@@ -214,7 +217,6 @@ export default function EditOsobaPodsumowaniePage() {
                   Uzy: {z.dataOtwarciaSpecjalizacji ? z.dataOtwarciaSpecjalizacji.split('T')[0] : '1993-04-07'}
                 </td>
                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>{z.dyplom || 'brak'}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>bez zmian</td>
               </tr>
             ))}
           </tbody>
@@ -231,7 +233,30 @@ export default function EditOsobaPodsumowaniePage() {
         {' '}Kompetencje i umiejętności
       </div>
 
-      <div style={{ padding: '1rem', backgroundColor: '#f8f9fa', marginBottom: '1rem' }}>Brak danych</div>
+      {kompetencje.length > 0 ? (
+        <table style={{ borderCollapse: 'collapse', width: '100%', marginBottom: '1rem' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#e0e0e0' }}>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Kod</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Nazwa</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Poziom</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Zaświadczenie</th>
+            </tr>
+          </thead>
+          <tbody>
+            {kompetencje.map((k, index) => (
+              <tr key={k.id} style={{ backgroundColor: index % 2 === 0 ? 'white' : '#f8f9fa' }}>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{k.kod}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{k.nazwa}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{k.poziom}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{k.zaswiadczenie}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div style={{ padding: '1rem', backgroundColor: '#f8f9fa', marginBottom: '1rem' }}>Brak danych</div>
+      )}
 
       {/* Doświadczenie zawodowe */}
       <div style={{ marginBottom: '0.5rem', backgroundColor: '#b8d4f7', padding: '8px', fontWeight: 'bold' }}>
@@ -248,7 +273,6 @@ export default function EditOsobaPodsumowaniePage() {
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Kod</th>
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Nazwa</th>
               <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Zaświadczenie</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>Typ zmian</th>
             </tr>
           </thead>
           <tbody>
@@ -259,7 +283,6 @@ export default function EditOsobaPodsumowaniePage() {
                   {d.nazwa || 'DOŚWIADCZENIE ZAWODOWE W PORADNI LUB ODDZIALE SZPITALNYM REALIZUJĄCYM DANY PROGRAM LEKOWY - MIN 2 LATA'}
                 </td>
                 <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>{d.zaswiadczenie || 'brak'}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px', textAlign: 'center' }}>bez zmian</td>
               </tr>
             ))}
           </tbody>
