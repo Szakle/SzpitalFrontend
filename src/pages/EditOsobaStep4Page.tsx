@@ -26,6 +26,7 @@ export default function EditOsobaStep4Page() {
   const loadUprawnienia = () => {
     api.get(`/api/UprawnieniZawodowe/osoba/${id}`)
       .then(res => {
+        console.log('Załadowane uprawnienia z API:', res.data);
         setUprawnienia(res.data);
         setLoading(false);
       })
